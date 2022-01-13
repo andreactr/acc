@@ -26,7 +26,7 @@ export class AppComponent implements AfterViewInit {
 
   elementos: any = [];
   elementosClient: any = [];
-
+  regresarr = '';
 
 
   cabeceras = ['Transaction Hash', 'Block Number','Valor'];
@@ -44,7 +44,9 @@ export class AppComponent implements AfterViewInit {
       nump: new FormControl('')
       });
 
-
+      regresarboleto = new FormGroup({
+        cantboletos: new FormControl('')
+        });
 
 
   ngAfterViewInit(): void {
@@ -98,6 +100,29 @@ export class AppComponent implements AfterViewInit {
       this.resultado = "Error";
    });
   }
+
+
+  async regresar(): Promise<void> {
+    const cuent1 =  '0x9Da3c0B8cF4774Bda306D3Ee54dfBEF59ba5d8D8';
+    const cantboletos =  this.regresarboleto.get('cantboletos')?.value;
+    
+    this.web3s.contrato.methods.transfer(cuent1, cantboletos).send({from: this.web3s.accounts[0]})
+
+    .then((response:any) => {
+      this.regresarr = "Voleto regresado con éxito";
+      this.blockHash = response.blockHash;
+      this.blockNumber = response.blockNumber;
+      this.from = response.from;
+      this.transactionHash = response.transactionHash;
+      this.web3s.contrato.methods.approve(cuent1, cantboletos).send({from: this.web3s.accounts[0]})
+   })
+
+   .catch((error: any) => {
+      console.log(error);
+      this.regresarr = "Error no se pudo regresar el boleto :(";
+   });
+  }
+
 
   getCount(): void {
     this.web3s.contrato.methods.getCount().call().then((response: any) => {
